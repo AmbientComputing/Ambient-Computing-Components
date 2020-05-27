@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  hue_driver:
+    build: ./philips_hue_driver
+    image: ambienthealthcare/philips_hue_driver
+    container_name: hue_driver
+    depends_on:
+      - mosquitto
+      - influxdb
+    restart: always
+    environment:
+      - HUE_IP=192.168.1.101
+    volumes:
+      - ./data/hue_driver:/data

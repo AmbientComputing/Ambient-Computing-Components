@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  ms_driver:
+    build: ./dummy_motion_sensor_driver
+    image: ambienthealthcare/dummy_motion_sensor_driver
+    container_name: ms_driver
+    depends_on:
+      - mosquitto
+      - influxdb
+    restart: always
