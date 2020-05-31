@@ -12,11 +12,10 @@ import socket
 
 HOST_PORT = 22000
 
-import subprocess
-subprocess = subprocess.Popen("echo $(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1'|grep 192.)", shell=True, stdout=subprocess.PIPE)
-host_ip = subprocess.stdout.read()
-print(host_ip.strip())
-
+# import subprocess
+# subprocess = subprocess.Popen("echo $(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1'|grep 192.)", shell=True, stdout=subprocess.PIPE)
+# host_ip = subprocess.stdout.read()
+# print(host_ip.strip())
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # Pull IP Address for Local HTTP File Serving (Note: This requires an internet connection)
 s.connect(("8.8.8.8", 80))
 host_ip = s.getsockname()[0]
@@ -24,6 +23,8 @@ print (host_ip)
 
 chromecasts = None
 files_dir = 'mp3_cache'
+if not os.path.exists(files_dir):
+    os.mkdir(files_dir)
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
@@ -56,6 +57,7 @@ def on_message(client, userdata, msg):
     print(msg.topic+" "+message)
 
     mp3_file = files_dir + "/" + message.replace(" ","_") + ".mp3"
+    print(mp3_file)
     tts = gTTS(text=message, lang='en-uk') # See Google TTS API for more Languages (Note: This may do translation Also - Needs Testing)
     tts.save(mp3_file)
     print("about to cast")
