@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  google_home_broadcast:
+    build: ./google_home_broadcast
+    image: ambienthealthcare/google_home_broadcast
+    container_name: google_home_broadcast
+    # ports:
+      # - 22000:22000
+    # environment:
+      # - HOST_IP=${HOST_IP}
+    depends_on:
+     - mosquitto
+ #     - influxdb
+    restart: always
+    network_mode: "host"
