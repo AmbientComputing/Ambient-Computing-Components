@@ -7,6 +7,8 @@ A simulation of a motion sensor driver to produce virtual motion sensor data.
 import paho.mqtt.client as mqtt
 from time import sleep
 import base64
+import glob
+import random
 
 MQTT_ADDRESS = 'mosquitto'
 MQTT_USER = 'mqttuser'
@@ -16,6 +18,7 @@ MQTT_PASSWORD = 'mqttpassword'
 #MQTT_REGEX = '([^/]+)/([^/]+)/([^/]+)'
 MQTT_CLIENT_ID = 'dummy_camera_driver'
 SENSOR_NAME = 'dummy_camera_1'
+IMAGE_DIR = "images/"
 
 def on_connect(client, userdata, flags, rc):
     """ The callback for when the client receives a CONNACK response from the server."""
@@ -29,12 +32,15 @@ def main():
     mqtt_client.connect(MQTT_ADDRESS, 1883)
     mqtt_client.loop_start()
 
+    images = glob.glob(IMAGE_DIR + "*.jpg")
+    print(images)
     motion_detected_last_time = True
     motion_detected_now = True
     while True:
         sleep(5)
 
-        encoded_image = convertImageToBase64('images/A20060111380310.jpg')
+        # send a random image (TODO: do in sequence later):
+        encoded_image = convertImageToBase64(random.choice(images))
         mqtt_client.publish("uncached/camera_image/{}".format(SENSOR_NAME),
                                 "images,type=image,device_name={} value={}".format(SENSOR_NAME,
                                                                                     str(encoded_image)))
