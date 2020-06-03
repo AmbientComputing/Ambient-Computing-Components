@@ -12,7 +12,9 @@ parser.add_argument('--topic', default='+/camera_image/+')
 args = parser.parse_args()
 print(args.host, args.topic)
 
-cv2.namedWindow("output", cv2.WINDOW_NORMAL) 
+window_name = args.topic
+
+cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
@@ -32,10 +34,10 @@ def on_message(client, userdata, msg):
     im = cv2.imdecode(jpg_as_np, flags=1)
     shape = im.shape
     ratio = shape[0]/shape[1]
-    im = cv2.resize(im, (300, int(300*ratio)))
+    im = cv2.resize(im, (600, int(600*ratio)))
 
-    cv2.imshow('output', im)
-    cv2.waitKey(10)
+    cv2.imshow(window_name, im)
+    cv2.waitKey(100)
 
 client = mqtt.Client()
 client.on_connect = on_connect
