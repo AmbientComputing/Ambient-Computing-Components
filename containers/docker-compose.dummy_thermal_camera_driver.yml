@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  dummy_thermal_camera_driver:
+    build: ./dummy_thermal_camera_driver
+    image: ambienthealthcare/dummy_thermal_camera_driver
+    container_name: dummy_thermal_camera_driver
+    depends_on:
+      - mosquitto
+      - influxdb
+    restart: always
