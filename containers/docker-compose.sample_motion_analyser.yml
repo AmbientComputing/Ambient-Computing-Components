@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  sample_motion_analyser:
+    build: ./sample_motion_analyser
+    image: ambienthealthcare/sample_motion_analyser
+    container_name: sample_motion_analyser
+    depends_on:
+      - mosquitto
+      - influxdb
+    restart: always
