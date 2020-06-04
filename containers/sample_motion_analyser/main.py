@@ -12,6 +12,7 @@ from typing import NamedTuple
 import paho.mqtt.client as mqtt
 from influxdb import InfluxDBClient
 import statistics
+from json import dumps
 
 INFLUXDB_ADDRESS = 'influxdb'
 INFLUXDB_USER = 'root'
@@ -55,7 +56,7 @@ def get_and_send_stats_for_ms(device_type, device_id, client=None):
         # fill(previous) to make the data step-change data, because the sensor only
         # sends whent there is a change in state
         query = "SELECT max(value)  FROM {} WHERE time >= now() - {} and device_name='{}' group by " \
-                "time(5s) fill(previous);".format(device_type, period, device_id)
+                "time(30s) fill(previous);".format(device_type, period, device_id)
         resp = influxdb_client.query(query)
 
         # keep only values which are not None:
@@ -64,11 +65,26 @@ def get_and_send_stats_for_ms(device_type, device_id, client=None):
         proportion_active = statistics.mean(data_list)
 
         if client is not None:
-            topic = "cached/motion_sensor_summary/{}_{}_activity_level".format(device_id, period)
-            print("SENDING", topic, proportion_active)
-            client.publish(topic, proportion_active)
+            topic = "cached/motion_sensor_summary_{}_activity/{}".format(period, device_id)
+            payload = \
+                "motion_sensor_summary_{}_activity,type=motion_sensor_summary_{}_activity,device_name={} " \
+                "value={}".format(period, period,
+                                  device_id, proportion_active)
+            print("SENDING", topic, payload)
+            client.publish(topic, payload)
 
-    # TODO: number of firings per hour over the last n hours
+
+    ### And report the number of firings per hour over the last n hours:
+    query = "SELECT count(value) FROM {} WHERE time >= now() -24h and device_name='{}' GROUP BY time(1h)".\
+        format(device_type, device_id)
+    resp = influxdb_client.query(query)
+    data_list = [val['count'] for val in resp.get_points(measurement=MOTION_SENSOR_TYPE) if val['count'] is not None]
+    topic = "uncached/motion_sensor_summary_profile/{}".format(device_id)
+    payload = \
+        "motion_sensor_summary_profile,type=motion_sensor_summary_profile,device_name={} " \
+        "value={}".format(device_id, dumps(data_list))
+    print("SENDING", topic, payload)
+    client.publish(topic, payload)
 
 def main():
 
