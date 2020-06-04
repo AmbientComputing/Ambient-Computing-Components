@@ -15,7 +15,7 @@ MQTT_PASSWORD = 'mqttpassword'
 MQTT_TOPIC = '+/+/+'
 MQTT_REGEX = '([^/]+)/([^/]+)/([^/]+)'
 MQTT_CLIENT_ID = 'dummy_motion_sensor'
-SENSOR_NAME = 'ms1'
+SENSOR_NAME = 'dummy_ms_1'
 
 def on_connect(client, userdata, flags, rc):
     """ The callback for when the client receives a CONNACK response from the server."""
@@ -42,7 +42,7 @@ def main():
         if motion_detected_now != motion_detected_last_time:
             print('simulated motion state has changed to: ', motion_detected_now)
 
-            mqtt_client.publish("cached/dummy_motion_sensor/{}".format(SENSOR_NAME),
+            mqtt_client.publish("cached/motion/{}".format(SENSOR_NAME),
                                 "motion,type=motion,device_name={} value={}".format(SENSOR_NAME,
                                                                                     int(motion_detected_now)))
 
