@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  activity_motivator:
+    build: ./activity_motivator
+    image: ambienthealthcare/activity_motivator
+    container_name: activity_motivator
+    environment:
+      - MIN_SECS_BETWEEN_BROADCASTS=60
+    depends_on:
+      - mosquitto
+      - google_home_broadcast
+      - sample_motion_analyser
+    restart: always

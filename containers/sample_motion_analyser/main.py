@@ -56,7 +56,7 @@ def get_and_send_stats_for_ms(device_type, device_id, client=None):
         # fill(previous) to make the data step-change data, because the sensor only
         # sends whent there is a change in state
         query = "SELECT max(value)  FROM {} WHERE time >= now() - {} and device_name='{}' group by " \
-                "time(30s) fill(previous);".format(device_type, period, device_id)
+                "time(20s) fill(previous);".format(device_type, period, device_id)
         resp = influxdb_client.query(query)
 
         # keep only values which are not None:
