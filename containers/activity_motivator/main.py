@@ -5,7 +5,7 @@ Code to apply logic to analysed motion sensor data to decide what to say to the 
 """
 
 import paho.mqtt.client as mqtt
-from time import sleep
+from time import sleep, time
 import os
 
 MQTT_ADDRESS = 'mosquitto'
@@ -14,24 +14,29 @@ MQTT_PASSWORD = 'mqttpassword'
 MQTT_TOPIC = '+/motion_sensor_summary_15m_activity/+'
 MQTT_OUTPUT_TOPIC = 'uncached/google_home_broadcast/blank'
 MQTT_CLIENT_ID = 'activity_motivator'
-MIN_SECS_BETWEEN_BROADCASTS = os.environ['MIN_SECS_BETWEEN_BROADCASTS']
+MIN_SECS_BETWEEN_BROADCASTS = int(os.environ['MIN_SECS_BETWEEN_BROADCASTS'])
+# Ensure we send a message at the start:
+time_since_last = time() - MIN_SECS_BETWEEN_BROADCASTS
+print(time_since_last, time())
 
 def on_connect(client, userdata, flags, rc):
     """ The callback for when the client receives a CONNACK response from the server."""
     print('Connected with result code ' + str(rc))
     client.subscribe(MQTT_TOPIC)
 
-
 def on_message(client, userdata, msg):
     """The callback for when a PUBLISH message is received from the server."""
+    global time_since_last
     payload = msg.payload
     analysis_val = float(payload.decode('utf-8').split('value=')[-1])
-#TODO: reason about time since last message
-    print(MIN_SECS_BETWEEN_BROADCASTS)
-    if analysis_val > 0.6:
-        message = 'Well done for staying active, keep it up.'
-    else:
-        message = 'You have not been very active recently, keep active to stay healthy.'
+    print('Activity Level: {}'.format(analysis_val))
+
+    if (time()-time_since_last)>MIN_SECS_BETWEEN_BROADCASTS:
+        if analysis_val > 0.6:
+            message = 'Well done for staying active, keep it up.'
+        else:
+            message = 'You have not been very active recently, keep active to stay healthy.'
+        time_since_last = time()
 
     client.publish('uncached/google_home_broadcast/blank', message)
 
