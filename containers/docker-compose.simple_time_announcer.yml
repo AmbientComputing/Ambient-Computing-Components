@@ -9,4 +9,5 @@ services:
       - NOTIFICATION_INTERVAL_SECONDS=60
     depends_on:
       - mosquitto
+      - google_home_broadcast
     restart: always
