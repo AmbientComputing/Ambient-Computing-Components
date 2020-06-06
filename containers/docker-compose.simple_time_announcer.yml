@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  simple_time_announcer:
+    build: ./simple_time_announcer
+    image: ambienthealthcare/simple_time_announcer
+    container_name: simple_time_announcer
+    environment:
+      - NOTIFICATION_INTERVAL_SECONDS=60
+    depends_on:
+      - mosquitto
+    restart: always
