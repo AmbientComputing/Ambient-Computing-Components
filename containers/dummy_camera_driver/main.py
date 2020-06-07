@@ -23,7 +23,7 @@ IMAGE_DIR = "images/"
 def on_connect(client, userdata, flags, rc):
     """ The callback for when the client receives a CONNACK response from the server."""
     print('Connected with result code ' + str(rc))
-    client.subscribe(MQTT_TOPIC)
+#    client.subscribe(MQTT_TOPIC)
 
 def main():
     mqtt_client = mqtt.Client(MQTT_CLIENT_ID)
@@ -34,10 +34,9 @@ def main():
 
     images = glob.glob(IMAGE_DIR + "*.jpg")
     print(images)
-    motion_detected_last_time = True
-    motion_detected_now = True
     while True:
         sleep(5)
+        print("Sending image")
 
         # send a random image (TODO: do in sequence later):
         encoded_image = convertImageToBase64(random.choice(images))

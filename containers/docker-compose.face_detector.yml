@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  face_detector:
+    build: ./face_detector
+    image: ambienthealthcare/face_detector
+    container_name: face_detector
+    depends_on:
+      - mosquitto
+    restart: always
