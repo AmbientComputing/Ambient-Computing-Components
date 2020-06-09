@@ -47,9 +47,9 @@ def on_message(client, userdata, msg):
     retval, buffer = cv2.imencode('.jpg', im)
     enc_im = base64.b64encode(buffer)
 
-    client.publish(MQTT_OUTPUT_TOPIC.format(device_name), enc_im)
-
-#    client.publish('uncached/google_home_broadcast/blank', message)
+    client.publish(MQTT_OUTPUT_TOPIC.format(device_name),
+                   "images,type=face_detect_image,device_name={} value={}".format(device_name,
+                                                                                  str(enc_im)))
 
 
 def main():
