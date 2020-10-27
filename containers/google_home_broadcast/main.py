@@ -79,7 +79,7 @@ def cast(ip_add, mp3):
 
 
 print("Getting chromecasts...")
-CHROMECASTS = pychromecast.get_chromecasts()
+CHROMECASTS,_ = pychromecast.get_chromecasts()
 print(CHROMECASTS)
 
 
